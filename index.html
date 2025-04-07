@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交互式HTML/CSS实验</title>
+    <style>
+        /* 全局样式 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* 选项卡样式 */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-btn {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn:hover {
+            color: #2c3e50;
+        }
+        
+        .tab-btn.active {
+            color: #3498db;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* 第一部分：定位展示知识点视图 */
+        .knowledge-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .center-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .center-icon:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .center-icon i {
+            font-size: 60px;
+            color: #3498db;
+        }
+        
+        .knowledge-box {
+            position: absolute;
+            width: 220px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .knowledge-box:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .box1 {
+            top: 80px;
+            left: 80px;
+            border-top: 4px solid #e74c3c;
+        }
+        
+        .box2 {
+            top: 80px;
+            right: 80px;
+            border-top: 4px solid #2ecc71;
+        }
+        
+        .box3 {
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top: 4px solid #f39c12;
+        }
+        
+        .knowledge-box h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 18px;
+        }
+        
+        .box1 h3 {
+            color: #e74c3c;
+        }
+        
+        .box2 h3 {
+            color: #2ecc71;
+        }
+        
+        .box3 h3 {
+            color: #f39c12;
+        }
+        
+        .knowledge-box ul {
+            list-style-type: none;
+        }
+        
+        .knowledge-box li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .knowledge-box li:last-child {
+            border-bottom: none;
+        }
+        
+        .knowledge-box li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        /* 第二部分：新闻资讯网页 */
+        .news-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .news-header {
+            padding: 25px;
+            text-align: center;
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+        }
+        
+        .news-header h2 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+        
+        .news-header p {
+            margin-top: 10px;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        hr {
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+            margin: 0;
+        }
+        
+        .news-content {
+            display: flex;
+            padding: 25px;
+        }
+        
+        .main-news {
+            flex: 2;
+            padding-right: 25px;
+            border-right: 1px solid #eee;
+        }
+        
+        .hot-news {
+            flex: 1;
+            padding-left: 25px;
+        }
+        
+        .hot-news h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            color: #2c3e50;
+            font-size: 20px;
+        }
+        
+        .news-item {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .news-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .news-item h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        
+        .news-images {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            gap: 15px;
+        }
+        
+        .news-images img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .news-images img:hover {
+            transform: scale(1.02);
+        }
+        
+        .news-text {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .author-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #999;
+        }
+        
+        .author-info span {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-info i {
+            margin-right: 5px;
+        }
+        
+        .hot-item {
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .hot-item a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .hot-item a:hover {
+            color: #3498db;
+        }
+        
+        .hot-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .hot-item img:hover {
+            transform: scale(1.03);
+        }
+        
+        .hot-item .date {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .news-content {
+                flex-direction: column;
+            }
+            
+            .main-news {
+                padding-right: 0;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 25px;
+                margin-bottom: 25px;
+            }
+            
+            .hot-news {
+                padding-left: 0;
+            }
+            
+            .knowledge-box {
+                width: 180px;
+            }
+            
+            .box1, .box2 {
+                top: 60px;
+            }
+            
+            .box1 {
+                left: 40px;
+            }
+            
+            .box2 {
+                right: 40px;
+            }
+            
+            .box3 {
+                bottom: 60px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="knowledge">知识点展示</button>
+            <button class="tab-btn" data-tab="news">新闻资讯</button>
+        </div>
+        
+        <div id="knowledge" class="tab-content active">
+            <div class="knowledge-container">
+                <div class="center-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                
+                <div class="knowledge-box box1">
+                    <h3><i class="fas fa-code"></i> HTML知识点</h3>
+                    <ul>
+                        <li>HTML5语义化标签</li>
+                        <li>表单与输入类型</li>
+                        <li>多媒体元素</li>
+                        <li>SEO最佳实践</li>
+                        <li>可访问性设计</li>
+                    </ul>
+                </div>
+                
+                <div class="knowledge-box box2">
+                    <h3><i class="fab fa-css3-alt"></i> CSS知识点</h3>
+                    <ul>
+                        <li>Flexbox布局</li>
+                        <li>Grid布局系统</li>
+                        <li>CSS动画与过渡</li>
+                        <li>响应式设计</li>
+                        <li>自定义属性</li>
+                    </ul>
+                </div>
+                
+                <div class="knowledge-box box3">
+                    <h3><i class="fab fa-js"></i> JavaScript知识点</h3>
+                    <ul>
+                        <li>ES6+新特性</li>
+                        <li>异步编程</li>
+                        <li>DOM操作</li>
+                        <li>模块化开发</li>
+                        <li>API调用</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="news" class="tab-content">
+            <div class="news-container">
+                <div class="news-header">
+                    <h2>科技前沿资讯</h2>
+                    <p>最新科技动态与行业趋势</p>
+                </div>
+                
+                <hr>
+                
+                <div class="news-content">
+                    <div class="main-news">
+                        <div class="news-item">
+                            <h4>人工智能在医疗诊断中的突破性进展</h4>
+                            <div class="news-images">
+                                <img src="img/0d22cbd0e536d92820d7aa29db2bff77.jpg" alt="AI医疗">
+                                <img src="img/6a3d142a3920441762e58f86910b9d4b.jpg" alt="医疗科技">
+                            </div>
+                            <p class="news-text">研究人员开发出新的人工智能算法，能够在早期准确识别多种疾病，准确率达到95%以上，远超传统诊断方法...</p>
+                            <div class="author-info">
+                                <span><i class="far fa-user"></i> 张博士</span>
+                                <span><i class="far fa-clock"></i> 2023-05-18</span>
+                                <span><i class="far fa-eye"></i> 2.4k浏览</span>
+                            </div>
+                        </div>
+                        
+                        <div class="news-item">
+                            <h4>量子计算机实现100量子比特运算</h4>
+                            <div class="news-images">
+                                <img src="img/112976b6945b66179151a3f3a60ce54f.jpeg" alt="量子计算机">
+                                <img src="img/0d22cbd0e536d92820d7aa29db2bff77.jpg" alt="物理科技">
+                            </div>
+                            <p class="news-text">科技公司宣布其量子计算机成功实现100量子比特的稳定运算，为解决复杂优化问题开辟了新途径，预计将在金融、物流等领域产生重大影响...</p>
+                            <div class="author-info">
+                                <span><i class="far fa-user"></i> 李教授</span>
+                                <span><i class="far fa-clock"></i> 2023-05-17</span>
+                                <span><i class="far fa-eye"></i> 3.1k浏览</span>
+                            </div>
+                        </div>
+                        
+                        <div class="news-item">
+                            <h4>新型固态电池充电速度提升5倍</h4>
+                            <div class="news-images">
+                                <img src="img/6a3d142a3920441762e58f86910b9d4b.jpg"alt="固态电池">
+                                <img src="img/112976b6945b66179151a3f3a60ce54f.jpeg" alt="电动汽车">
+                            </div>
+                            <p class="news-text">科学家研发出新型固态电池技术，充电速度比传统锂离子电池快5倍，能量密度提高50%，且安全性大幅提升，有望彻底改变电动汽车行业...</p>
+                            <div class="author-info">
+                                <span><i class="far fa-user"></i> 王工程师</span>
+                                <span><i class="far fa-clock"></i> 2023-05-16</span>
+                                <span><i class="far fa-eye"></i> 1.8k浏览</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hot-news">
+                        <h3>热门推荐</h3>
+                        
+                        <div class="hot-item">
+                            <a href="#">5G技术如何重塑未来通信生态</a>
+                            <img src="img/112976b6945b66179151a3f3a60ce54f.jpeg" alt="5G技术">
+                            <span class="date">2023-05-15</span>
+                        </div>
+                        
+                        <div class="hot-item">
+                            <a href="#">元宇宙中的数字身份与隐私保护</a>
+                            <img src="img/0d22cbd0e536d92820d7aa29db2bff77.jpg" alt="元宇宙">
+                            <span class="date">2023-05-14</span>
+                        </div>
+                        
+                        <div class="hot-item">
+                            <a href="#">区块链在供应链管理中的应用实践</a>
+                            <img src="img/6a3d142a3920441762e58f86910b9d4b.jpg" alt="区块链">
+                            <span class="date">2023-05-13</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 选项卡切换功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有active类
+                    tabBtns.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // 添加active类到当前点击的选项卡
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
